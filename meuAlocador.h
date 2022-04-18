@@ -8,7 +8,7 @@ void iniciaAlocador();
 void finalizaAlocador();
 
 // Indica que um bloco está livre
-void liberaMem(void *bloco);
+int liberaMem(void *bloco);
 
 // Aloca um bloco de tamanho num_bytes na memória
 void *alocaMem(int num_bytes); 
