@@ -36,7 +36,7 @@ int liberaMem(void *bloco)
     bloco[-16] = 0;
     
     void *primBloco = topoInicialHeap+16;
-    while(primBloco-16 == 1)
+    while(primBloco[-16] == 1)
     {
         primBloco += primBloco[-8] + 16;
     }
@@ -54,7 +54,7 @@ int liberaMem(void *bloco)
         else
         {
             primBloco[-8] = tamBloco;
-            while(proxBloco < topoAtualHeap && proxBloco-16 == 1)
+            while(proxBloco < topoAtualHeap && proxBloco[-16] == 1)
             {
                 proxBloco += proxBloco[-8] + 16;
             }
@@ -84,6 +84,7 @@ void *alocaMem(int num_bytes)
         return bloco;
     }
 
+    // ESSA EH A CONDICAO DO NEXT-FIT!!!!
     while(bloco[-8] < num_bytes || bloco[-16] == 1)
     {
         bloco += bloco[-8] + 16;
