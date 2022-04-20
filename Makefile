@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wall -no-pie
+ASFLAGS = 
 
 objects = *.o
 
@@ -7,9 +8,10 @@ all: pgma
 
 pgma: pgma.c meuAlocador.o
 meuAlocador.o: meuAlocador.h meuAlocador.s
-	as meuAlocador.s -o meuAlocador.o
+	as $(ASFLAGS) meuAlocador.s -o meuAlocador.o
 
 debug: CFLAGS += -g -DDEBUG
+debug: ASFLAGS += -g
 debug: all
 
 clean:
