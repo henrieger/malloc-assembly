@@ -377,7 +377,7 @@ retorno_aloca:
 # ######################### #
 # bloco         # -16(%rbp) #
 # topoAtualHeap # -24(%rbp) #
-# conteudo      # -25(%rbp) #
+# conteudo      # -32(%rbp) #
 # ######################### #
 
 imprimeMapa:
@@ -387,7 +387,7 @@ imprimeMapa:
 
     pushq %rbx  # empilha %rbx antigo
 
-    subq $17, %rsp  # aloca espaco para variaveis locais
+    subq $24, %rsp  # aloca espaco para variaveis locais
 
     # bloco <- topoInicialHeap + 16
     movq TOPO_INICIAL_HEAP, %rax    # %rax <- topoInicialHeap
@@ -418,26 +418,27 @@ while_imprime:
     jne else_imprime
 
     movq $OCUPADO, %rax      # %rax <- '+'
-    movq %rax, -25(%rbp)    # conteudo <- '+'
+    movq %rax, -32(%rbp)    # conteudo <- '+'
     jmp fim_if_imprime
 
 else_imprime:
     movq $DISPONIVEL, %rax   # %rax <- '-'
-    movq %rax, -25(%rbp)    # conteudo <- '-'
+    movq %rax, -32(%rbp)    # conteudo <- '-'
 
 fim_if_imprime:    
     movq $0, %rdi   # i <- 0
 for_imprime:
-    # i < topoAtualHeap
-    cmpq %rdi, -24(%rbp)
+    # i < bloco[-8]
+    movq -16(%rbp), %rax    # %rax <- bloco
+    cmpq -8(%rax), %rdi     # i < %rax[-8]
     jge fim_for_imprime
 
     # printf("%c", conteudo)
-    pushq %rdi              # empilha i
-    movq $FORMATO, %rdi      # 1o parametro recebe "%c"  
-    movq -25(%rbp), %rsi    # 2o parametro recebe conteudo
+    movq %rdi, %rbx         # empilha i
+    movq $FORMATO, %rdi     # 1o parametro recebe "%c"  
+    movq -32(%rbp), %rsi    # 2o parametro recebe conteudo
     call printf             # printf()
-    popq %rdi               # desempilha i
+    movq %rbx, %rdi         # desempilha i
 
     addq $1, %rdi           # i++
     jmp for_imprime
@@ -457,7 +458,7 @@ fim_while_imprime:
     call printf
 
     # saida do procedimento
-    addq $17, %rsp
+    addq $24, %rsp
     popq %rbx
     popq %rbp
     ret
