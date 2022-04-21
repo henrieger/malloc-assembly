@@ -1,6 +1,8 @@
 #include "meuAlocador.h" 
+#include <stdio.h>
 
 int main() {
+  printf("meu lindo programa\n");
   void *a, *b;
   iniciaAlocador();
   imprimeMapa();

@@ -2,6 +2,12 @@
 TOPO_INICIAL_HEAP:          .quad 0
 ULTIMO_ENDERECO_ALOCADO:    .quad 0
 
+INFORMACOES_GERENCIAIS:     .string "################"
+OCUPADO:                    .string "+"
+DISPONIVEL:                 .string "-"
+NOVA_LINHA:                 .string "\n"
+FORMATO:                    .string "%s"
+
 .section .text
 
 .globl iniciaAlocador
@@ -367,13 +373,91 @@ retorno_aloca:
     popq %rbp
     ret
 
+# TABELA DE SIMBOLOS ALOCA_MEM
+# ######################### #
+# bloco         # -16(%rbp) #
+# topoAtualHeap # -24(%rbp) #
+# conteudo      # -25(%rbp) #
+# ######################### #
+
 imprimeMapa:
     # configura rbp
     pushq %rbp
     movq %rsp, %rbp
 
-    movq $0, %rax
+    pushq %rbx  # empilha %rbx antigo
+
+    subq $17, %rsp  # aloca espaco para variaveis locais
+
+    # bloco <- topoInicialHeap + 16
+    movq TOPO_INICIAL_HEAP, %rax    # %rax <- topoInicialHeap
+    addq $16, %rax                  # %rax <- topoInicialHeap + 16
+    movq %rax, -16(%rbp)            # bloco <- %rax
+
+    # topoAtualHeap <- sbrk(0)
+    movq $12, %rax
+    movq $0, %rdi
+    syscall
+    movq %rax, -24(%rbp)
+
+    # while(bloco < topoAtualHeap)
+while_imprime:
+    movq -16(%rbp), %rax    # %rax <- bloco
+    movq -24(%rbp), %rbx    # %rbx <- topoAtualHeap
+    cmpq %rax, %rbx         # bloco < topoAtualHeap
+    jl fim_while_imprime
+
+    # print("################\n")
+    movq $INFORMACOES_GERENCIAIS, %rdi   # "###..." para primeiro parametro
+    call printf
+
+    # #if(bloco[-16] == 1)
+    movq -16(%rbp), %rax    # %rax <- bloco
+    movq $1, %rbx           # %rbx <- 1
+    cmpq -16(%rax), %rbx
+    jne else_imprime
+
+    movq $OCUPADO, %rax      # %rax <- '+'
+    movq %rax, -25(%rbp)    # conteudo <- '+'
+    jmp fim_if_imprime
+
+else_imprime:
+    movq $DISPONIVEL, %rax   # %rax <- '-'
+    movq %rax, -25(%rbp)    # conteudo <- '-'
+
+fim_if_imprime:    
+    movq $0, %rdi   # i <- 0
+for_imprime:
+    # i < topoAtualHeap
+    cmpq %rdi, -24(%rbp)
+    jge fim_for_imprime
+
+    # printf("%c", conteudo)
+    pushq %rdi              # empilha i
+    movq $FORMATO, %rdi      # 1o parametro recebe "%c"  
+    movq -25(%rbp), %rsi    # 2o parametro recebe conteudo
+    call printf             # printf()
+    popq %rdi               # desempilha i
+
+    addq $1, %rdi           # i++
+    jmp for_imprime
+
+fim_for_imprime:
+    # bloco += bloco[-8] + 16
+    movq -16(%rbp), %rax    # %rax <- bloco
+    addq -8(%rax), %rax     # %rax <- bloco + bloco[-8]
+    addq $16, %rax          # %rax <- bloco + bloco[-8] + 16
+    movq %rax, -16(%rbp)    # bloco <- %rax
+
+    jmp while_imprime
+
+fim_while_imprime:
+    # printf("\n")
+    movq $NOVA_LINHA, %rdi   # 1o parametro recebe "\n"
+    call printf
 
     # saida do procedimento
+    addq $17, %rsp
+    popq %rbx
     popq %rbp
     ret
