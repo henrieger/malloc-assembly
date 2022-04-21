@@ -349,14 +349,14 @@ fim_loop_aloca:
     movq -8(%rbx), %rbx     # %rbx <- bloco[-8]
     subq -16(%rbp), %rbx    # %rbx <- bloco[-8] - num_bytes
     subq $16, %rbx          # %rbx <- bloco[-8] - num_bytes - 16
-    movq %rbx, 8(%rax)         # *(bloco+num_bytes+8) <- %rbx
+    movq %rbx, 8(%rax)      # *(bloco+num_bytes+8) <- %rbx
     jmp fim_if_aloca
 
 # else if(bloco[-8] > num_bytes)
 else_if_aloca:
     movq -32(%rbp), %rax    # %rax <- bloco
     movq -16(%rbp), %rbx    # %rbx <- num_bytes
-    cmpq -8(%rax), %rbx     # compara bloco[-8] com num_bytes
+    cmpq %rbx, -8(%rax)     # compara bloco[-8] com num_bytes
     jle fim_if_aloca
 
     # num_bytes <- bloco[-8]
