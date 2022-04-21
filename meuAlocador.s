@@ -276,8 +276,8 @@ alocaMem:
 loop_aloca:
     movq -32(%rbp), %rax    # %rax <- bloco
     movq -16(%rbp), %rbx    # %rbx <- num_bytes
-    cmpq -8(%rax), %rbx     # bloco[-8] < num_bytes
-    jge comeco_loop_aloca
+    cmpq %rbx, -8(%rax)     # bloco[-8] < num_bytes
+    jl comeco_loop_aloca
     movq $1, %rbx           # %rbx <- 1
     cmpq -16(%rax), %rbx    # compara bloco[-16] com 1
     jne fim_loop_aloca
@@ -290,8 +290,8 @@ comeco_loop_aloca:
     movq %rax, -32(%rbp)    # bloco <- %rax
 
     # #if(bloco > topoAtualHeap)
-    cmpq %rax, -24(%rbp)
-    jg if_nao_achou_bloco_livre
+    cmpq -24(%rbp), %rax
+    jle if_nao_achou_bloco_livre
 
     # bloco <- topoInicialHeap + 16
     movq TOPO_INICIAL_HEAP, %rax    # bloco <- topoInicialHeap
@@ -330,7 +330,7 @@ fim_loop_aloca:
     movq -32(%rbp), %rax    # %rax <- bloco
     movq -16(%rbp), %rbx    # %rbx <- num_bytes
     addq $16, %rbx          # %rbx += 16
-    cmpq -8(%rax), %rbx     # compara bloco[-8] com num_bytes+16
+    cmpq %rbx, -8(%rax)     # compara bloco[-8] com num_bytes+16
     jle else_if_aloca
 
     # bloco[num_bytes] <- 0
@@ -339,8 +339,8 @@ fim_loop_aloca:
     movq $0, 0(%rax)        # *(bloco+num_bytes) <- 0
 
     # bloco[num_bytes+8] <-  bloco[-8] - num_bytes
-    movq %rbx, -32(%rbp)    # %rbx <- bloco
-    movq %rbx, -8(%rbx)     # %rbx <- bloco[-8]
+    movq -32(%rbp), %rbx    # %rbx <- bloco
+    movq -8(%rbx), %rbx     # %rbx <- bloco[-8]
     subq -16(%rbp), %rbx    # %rbx <- bloco[-8] - num_bytes
     subq $16, %rbx          # %rbx <- bloco[-8] - num_bytes - 16
     movq %rbx, 8(%rax)         # *(bloco+num_bytes+8) <- %rbx
