@@ -115,3 +115,22 @@ void *alocaMem(int num_bytes)
 
     return bloco;
 }
+
+void imprimeMapa()
+{
+    void *topoAtualHeap = sbrk(0);
+    void *bloco = topoInicialHeap;
+    char conteudo;
+    while (bloco < topoAtualHeap)
+    {
+        print("################\n");
+        if(bloco[-16] == 1)
+            conteudo = '+';
+        else
+            conteudo = '-';
+        for(int i = 0; i < bloco[-8], i++)
+            print("%c", conteudo);
+        printf("\n");
+        bloco += bloco[-8] + 16;
+    }
+}
