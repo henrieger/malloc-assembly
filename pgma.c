@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main() {
-  printf("Teste Alocacao Dinamica 1\n");
+  printf("Teste Alocacao Dinamica 1\n\n");
   void *a, *b;
   iniciaAlocador();
   imprimeMapa();

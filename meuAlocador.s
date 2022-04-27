@@ -5,7 +5,7 @@ ULTIMO_ENDERECO_ALOCADO:    .quad 0
 INFORMACOES_GERENCIAIS:     .string "################"
 OCUPADO:                    .string "+"
 DISPONIVEL:                 .string "-"
-NOVA_LINHA:                 .string "\n"
+NOVA_LINHA:                 .string "\n\n"
 FORMATO:                    .string "%s"
 
 .section .text
@@ -15,6 +15,7 @@ FORMATO:                    .string "%s"
 .globl liberaMem
 .globl alocaMem
 .globl imprimeMapa
+.globl ULTIMO_ENDERECO_ALOCADO
 
 # TABELA DE SIMBOLOS INICIA_ALOCADOR
 # ######################### #
@@ -140,6 +141,16 @@ comeco_loop_grande_libera:
     cmpq -16(%rax), %rbx        # 0 == proxBloco[-16]
     jne else_loop_grande_libera 
 
+    # #if(proxBloco == ultimoEnderecoAlocado)
+    movq -48(%rbp), %rax                # %rax <- proxBloco
+    cmpq ULTIMO_ENDERECO_ALOCADO, %rax  # ultimoEnderecoAlocado == proxBloco
+    jne incrementa_bloco_libera
+
+    # ultimoEnderecoAlocado <- primBloco
+    movq -32(%rbp), %rax                # %rax <- primBloco
+    movq %rax, ULTIMO_ENDERECO_ALOCADO  # ultimoEnderecoAlocado <- %rax
+
+incrementa_bloco_libera:
     # tamBloco += proxBloco[-8] + 16
     movq -48(%rbp), %rax    # %rax <- proxBloco
     movq -40(%rbp), %rbx    # %rbx <- tamBloco 

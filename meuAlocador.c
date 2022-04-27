@@ -48,6 +48,8 @@ int liberaMem(void *bloco)
     {
         if(proxBloco[-16] == 0)
         {
+            if(proxBloco == ultimoEnderecoAlocado)
+                ultimoEnderecoAlocado = primBloco;
             tamBloco += proxBloco[-8] +16;
             proxBloco += proxBloco[-8] + 16;
         }
