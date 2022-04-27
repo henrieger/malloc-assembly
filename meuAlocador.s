@@ -379,7 +379,7 @@ retorno_aloca:
     popq %rbp
     ret
 
-# TABELA DE SIMBOLOS ALOCA_MEM
+# TABELA DE SIMBOLOS IMPRIME_MAPA
 # ######################### #
 # bloco         # -16(%rbp) #
 # topoAtualHeap # -24(%rbp) #
@@ -423,11 +423,13 @@ while_imprime:
     cmpq -16(%rax), %rbx
     jne else_imprime
 
+    # conteudo <- "+"
     movq $OCUPADO, %rax      # %rax <- '+'
     movq %rax, -32(%rbp)    # conteudo <- '+'
     jmp fim_if_imprime
 
 else_imprime:
+    # conteudo <- "-"
     movq $DISPONIVEL, %rax   # %rax <- '-'
     movq %rax, -32(%rbp)    # conteudo <- '-'
 
