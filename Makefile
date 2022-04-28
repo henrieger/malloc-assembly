@@ -5,11 +5,11 @@ LDFILES = /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 /usr/lib/x86_64-linux-gnu/c
 
 objects = *.o
 
-all: pgma
+all: avalia
 
-pgma: pgma.o meuAlocador.o
-	ld pgma.o meuAlocador.o -o pgma -dynamic-linker $(LDFILES) -lc
-pgma.o: pgma.c
+avalia: avalia.o meuAlocador.o
+	ld avalia.o meuAlocador.o -o avalia -dynamic-linker $(LDFILES) -lc
+avalia.o: avalia.c
 meuAlocador.o: meuAlocador.h meuAlocador.s
 	as meuAlocador.s -o meuAlocador.o $(ASFLAGS) $(ASFILES) $(ASLIBS)
 
@@ -20,4 +20,4 @@ debug: all
 clean:
 	rm -f $(objects)
 purge: clean
-	rm -f pgma
+	rm -f avalia
